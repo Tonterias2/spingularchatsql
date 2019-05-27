@@ -1,0 +1,64 @@
+entity ChatClient {
+	creationDate Instant required,
+	website String required,
+    payment Boolean
+}
+
+entity ChatRoom {
+	creationDate Instant required,
+	roomName String minlength(2) maxlength(50) required,
+    roomDescription String minlength(2) maxlength(250),
+    privateRoom Boolean
+}
+
+entity ChatUser {
+	creationDate Instant required,
+    // PUEDO TENER EL NICKNAME COPIADO DE JHI_USER?
+	bannedUser Boolean
+}
+
+entity ChatMessage {
+	messageSentAt Instant required,
+    message String maxlength(65000) required,
+    user String required,
+    isDelivered Boolean,
+    isOffensive Boolean
+}
+
+entity ChatBlockedUser {
+	creationDate Instant required,
+}
+
+relationship OneToOne {
+    ChatUser{user(id) required} to User{chatUser(id)}
+}
+
+relationship ManyToMany {
+	ChatUser{chatRoom(roomName)} to ChatRoom{chatUser(id)} //necesito el nickname para referirme a el
+}
+
+relationship OneToMany {
+    ChatRoom{chatMessage} to ChatMessage{chatRoom(id) required}
+    ChatRoom{chatBlockedUser} to ChatBlockedUser{chatRoom(id) required}
+    ChatClient{chatRoom} to ChatRoom{chatClient(id) required}
+}
+
+//relationship ManyToOne {
+//	ChatRoom{chatClient(id)} to ChatClient{chatRoom(id)}
+//}
+
+// Set pagination options
+paginate ChatMessage with infinite-scroll
+paginate ChatClient, ChatRoom, ChatUser, ChatBlockedUser with pagination
+
+// Use Data Transfert Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl // except , 
+
+// FILTERING:
+filter *
+
+// Set an angular suffix
+// angularSuffix * with mySuffix

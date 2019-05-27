@@ -1,9 +1,11 @@
 package com.spingular.chat.web.websocket;
 
-import com.spingular.chat.security.SecurityUtils;
-import com.spingular.chat.service.ChatmessageService;
-import com.spingular.chat.service.dto.ChatmessageDTO;
-import com.spingular.chat.web.websocket.dto.MessageDTO;
+import static com.spingular.chat.config.WebsocketConfiguration.IP_ADDRESS;
+
+import java.security.Principal;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,10 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.security.Principal;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-
-import static com.spingular.chat.config.WebsocketConfiguration.IP_ADDRESS;
+import com.spingular.chat.security.SecurityUtils;
+import com.spingular.chat.service.ChatmessageService;
+import com.spingular.chat.service.dto.ChatmessageDTO;
+import com.spingular.chat.web.websocket.dto.MessageDTO;
 
 @Controller
 public class ChatService implements ApplicationListener<SessionDisconnectEvent> {

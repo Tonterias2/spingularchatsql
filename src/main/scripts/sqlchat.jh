@@ -1,7 +1,7 @@
-entity ChatClient {
+
+entity ChatUser {
 	creationDate Instant required,
-	website String required,
-    payment Boolean
+	bannedUser Boolean
 }
 
 entity ChatRoom {
@@ -11,45 +11,37 @@ entity ChatRoom {
     privateRoom Boolean
 }
 
-entity ChatUser {
+entity ChatRoomAllowedUser {
 	creationDate Instant required,
-    // PUEDO TENER EL NICKNAME COPIADO DE JHI_USER?
-	bannedUser Boolean
+	bannedUser Boolean,
+    bannedDate Instant
 }
 
 entity ChatMessage {
-	messageSentAt Instant required,
+	messageSentAt String required,
     message String maxlength(65000) required,
-    user String required,
     isDelivered Boolean,
     isOffensive Boolean
 }
 
-entity ChatBlockedUser {
-	creationDate Instant required,
-}
-
 relationship OneToOne {
-    ChatUser{user(id) required} to User{chatUser(id)}
+    ChatUser{user(id)} to User{chatUser(id)}
 }
 
 relationship ManyToMany {
-	ChatUser{chatRoom(roomName)} to ChatRoom{chatUser(id)} //necesito el nickname para referirme a el
+	ChatUser{chatRoom(id)} to ChatRoom{chatUser(id)}
 }
 
 relationship OneToMany {
-    ChatRoom{chatMessage} to ChatMessage{chatRoom(id) required}
-    ChatRoom{chatBlockedUser} to ChatBlockedUser{chatRoom(id) required}
-    ChatClient{chatRoom} to ChatRoom{chatClient(id) required}
+    ChatRoom{chatMessage} to ChatMessage{chatRoom(id)}
+    ChatRoom{chatRoomAllowedUser} to ChatRoomAllowedUser{chatRoom(id)}
+	ChatUser{chatMessage(id)} to ChatMessage{chatUser(id)}
+	ChatUser{chatRoomAllowedUser(id)} to ChatRoomAllowedUser{chatUser(id)} 
 }
-
-//relationship ManyToOne {
-//	ChatRoom{chatClient(id)} to ChatClient{chatRoom(id)}
-//}
 
 // Set pagination options
 paginate ChatMessage with infinite-scroll
-paginate ChatClient, ChatRoom, ChatUser, ChatBlockedUser with pagination
+paginate ChatRoom, ChatRoomAllowedUser with pagination
 
 // Use Data Transfert Objects (DTO)
 dto * with mapstruct

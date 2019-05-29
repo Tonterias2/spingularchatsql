@@ -20,8 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.spingular.chat.security.SecurityUtils;
-import com.spingular.chat.service.ChatmessageService;
-import com.spingular.chat.service.dto.ChatmessageDTO;
+import com.spingular.chat.service.ChatMessageService;
+import com.spingular.chat.service.dto.ChatMessageDTO;
 import com.spingular.chat.web.websocket.dto.MessageDTO;
 
 @Controller
@@ -34,7 +34,7 @@ public class ChatService implements ApplicationListener<SessionDisconnectEvent> 
     private final SimpMessageSendingOperations messagingTemplate;
     
     @Autowired
-    private ChatmessageService chatmessageService;
+    private ChatMessageService chatMessageService;
 
     public ChatService(SimpMessageSendingOperations messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -57,13 +57,13 @@ public class ChatService implements ApplicationListener<SessionDisconnectEvent> 
     @SendTo("/chat/public")
     public MessageDTO sendChat(@Payload MessageDTO messageDTO, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
         messageDTO.setUserLogin(principal.getName());
-    	ChatmessageDTO chatmessageDTO = new ChatmessageDTO();
+    	ChatMessageDTO chatmessageDTO = new ChatMessageDTO();
     	chatmessageDTO.setMessage(messageDTO.getMessage());
-    	chatmessageDTO.setTime(dateTimeFormatter.format(ZonedDateTime.now()));
-    	chatmessageDTO.setUserLogin(messageDTO.getUserLogin());
+    	chatmessageDTO.setMessageSentAt(dateTimeFormatter.format(ZonedDateTime.now()));
+    	chatmessageDTO.setChatUserId(Long.parseLong(messageDTO.getUserLogin()));
         log.debug("Message Recieved from sender {} ", messageDTO);
     	log.debug("Saving Chat Message : {}", chatmessageDTO);
-        chatmessageService.save(chatmessageDTO);
+        chatMessageService.save(chatmessageDTO);
         return setupMessageDTO(messageDTO, stompHeaderAccessor, principal);
     }
 

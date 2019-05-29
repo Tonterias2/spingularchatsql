@@ -1,0 +1,54 @@
+{
+    "name": "ChatMessage",
+    "fields": [
+        {
+            "fieldName": "messageSentAt",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "message",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength",
+                "required"
+            ],
+            "fieldValidateRulesMaxlength": 65000
+        },
+        {
+            "fieldName": "isDelivered",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "isOffensive",
+            "fieldType": "Boolean"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "chatRoom",
+            "otherEntityRelationshipName": "chatMessage",
+            "relationshipName": "chatRoom",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "chatUser",
+            "otherEntityRelationshipName": "chatMessage",
+            "relationshipName": "chatUser",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190529064432",
+    "entityTableName": "chat_message",
+    "dto": "mapstruct",
+    "pagination": "infinite-scroll",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

@@ -1,6 +1,24 @@
 <div class="row">
     <div class="col-md-3">
-        <span class="hipster img-fluid rounded"></span>
+                <div *ngFor="let chatRoom of chatRooms ;trackBy: trackId">
+            <span jhiTranslate="spingularchatsqlApp.chatRoom.detail.title">Chat Room</span> {{chatRoom.id}}
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="spingularchatsqlApp.chatRoom.roomName">Room Name</span></dt>
+                <dd>
+                	<button class="btn btn-outline-primary float-left jh-create-entity create-blog" (click)="fetchChatRoom(chatRoom.id)">
+                    	<span>{{chatRoom.roomName}}</span>
+                    </button>
+                </dd>
+                <!-- 
+                <dt><span jhiTranslate="spingularchatsqlApp.chatRoom.privateRoom">Private Room</span></dt>
+                <dd>
+                    <span>{{chatRoom.privateRoom}}</span>
+                </dd>
+                 -->
+            </dl>
+            <hr>
+        </div>
     </div>
     <div class="col-md-9">
         <div [ngSwitch]="isAuthenticated()">

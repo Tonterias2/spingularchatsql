@@ -18,6 +18,9 @@ import { ChatRoomService } from '../entities/chat-room/chat-room.service';
 import { IChatMessage } from 'app/shared/model/chat-message.model';
 import { ChatMessageService } from '../entities/chat-message/chat-message.service';
 
+import { IChatUser } from 'app/shared/model/chat-user.model';
+import { ChatUserService } from '../entities/chat-user/chat-user.service';
+
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
@@ -29,10 +32,13 @@ export class HomeComponent implements OnInit {
   messages: Array<Object> = [];
   message = '';
 
+  chatMessage: IChatMessage;
   chatMessages: IChatMessage[];
+  chatUser: IChatUser;
+  chatUsers: IChatUser[];
+  chatRooms: IChatRoom[];
 
   currentAccount: any;
-  chatRooms: IChatRoom[];
   error: any;
   success: any;
   eventSubscriber: Subscription;
@@ -45,6 +51,8 @@ export class HomeComponent implements OnInit {
   previousPage: any;
   reverse: any;
 
+  currentChatRoomId: number;
+
   constructor(
     private accountService: AccountService,
     private loginModalService: LoginModalService,
@@ -52,6 +60,7 @@ export class HomeComponent implements OnInit {
     private chatService: ChatService,
     protected chatRoomService: ChatRoomService,
     protected chatMessageService: ChatMessageService,
+    protected chatUserService: ChatUserService,
     protected parseLinks: JhiParseLinks,
     protected jhiAlertService: JhiAlertService,
     protected activatedRoute: ActivatedRoute,
@@ -67,6 +76,16 @@ export class HomeComponent implements OnInit {
 
     this.accountService.identity().then(account => {
       this.account = account;
+      const query = {};
+      query['id.equals'] = this.account.id;
+      //      console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
+      this.chatUserService.query(query).subscribe(
+        (res: HttpResponse<IChatUser[]>) => {
+          this.chatUser = res.body[0];
+          //          console.log('CONSOLOG: M:ngOnInit & O: this.chatUser : ', this.chatUser);
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
     });
 
     this.loadAll();
@@ -107,17 +126,18 @@ export class HomeComponent implements OnInit {
     if (message.length === 0) {
       return;
     }
-    this.chatService.sendMessage(message);
+    this.chatMessage = new Object();
+    this.chatMessage.chatUserId = this.account.id;
+    this.chatMessage.chatRoomId = this.currentChatRoomId;
+    this.chatMessage.message = message;
+    //    console.log('CONSOLOG: M:sendMessage & O: this.chatMessage: ', this.chatMessage);
+    this.chatService.sendMessage(this.chatMessage);
     this.message = '';
   }
 
   loadAll() {
     this.chatRoomService
-      .query({
-        //        page: this.page - 1,
-        //        size: this.itemsPerPage,
-        //        sort: this.sort()
-      })
+      .query({})
       .subscribe(
         (res: HttpResponse<IChatRoom[]>) => this.paginateChatRooms(res.body, res.headers),
         (res: HttpErrorResponse) => this.onError(res.message)
@@ -125,16 +145,14 @@ export class HomeComponent implements OnInit {
   }
 
   fetchChatRoom(chatRoomId) {
-    console.log('CONSOLOG: M:fetchChatRoom & O: chatRoomId : ', chatRoomId);
+    this.currentChatRoomId = chatRoomId;
     if (chatRoomId !== undefined) {
       const query = {};
-      query['chatRoomId.equals'] = chatRoomId;
+      query['chatRoomId.equals'] = this.currentChatRoomId;
       query['queryParams'] = 1;
-      console.log('CONSOLOG: M:fetchChatRoom & O: query : ', query);
       this.chatMessageService.query(query).subscribe(
         (res: HttpResponse<IChatMessage[]>) => {
           this.messages = res.body;
-          console.log('CONSOLOG: M:fetchChatRoom & O: this.messages : ', this.messages);
         },
         (res: HttpErrorResponse) => this.onError(res.message)
       );
@@ -157,7 +175,7 @@ export class HomeComponent implements OnInit {
     this.links = this.parseLinks.parse(headers.get('link'));
     this.totalItems = parseInt(headers.get('X-Total-Count'), 10);
     this.chatRooms = data;
-    console.log('CONSOLOG: M:paginateChatRooms & O: this.chatRooms : ', this.chatRooms);
+    //    console.log('CONSOLOG: M:paginateChatRooms & O: this.chatRooms : ', this.chatRooms);
   }
 
   protected onError(errorMessage: string) {

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-3">
                 <div *ngFor="let chatRoom of chatRooms ;trackBy: trackId">
-            <span jhiTranslate="spingularchatsqlApp.chatRoom.detail.title">Chat Room</span> {{chatRoom.id}}
+            <span jhiTranslate="spingularchatsqlApp.chatRoom.detail.title">Chat Room</span>{{chatRoom.id}}
             <jhi-alert-error></jhi-alert-error>
             <dl class="row-md jh-entity-details">
                 <dt><span jhiTranslate="spingularchatsqlApp.chatRoom.roomName">Room Name</span></dt>

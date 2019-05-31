@@ -71,6 +71,7 @@ export class ChatService {
 
   sendMessage(message) {
     if (this.stompClient !== null && this.stompClient.connected) {
+      console.log('CONSOLOG: M:sendMessage & O: JSON.stringify(message): ', JSON.stringify(message));
       this.stompClient.send(
         '/chat', // destination
         JSON.stringify(message), // body

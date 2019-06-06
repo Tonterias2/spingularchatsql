@@ -10,6 +10,8 @@ public class MessageDTO {
     private String userLogin;
     
     private Long chatRoomId;
+    
+    private Long chatUserId;
 
 	private String message;
 
@@ -31,7 +33,15 @@ public class MessageDTO {
 		this.chatRoomId = chatRoomId;
 	}
 	
-    public String getMessage() {
+    public Long getChatUserId() {
+		return chatUserId;
+	}
+
+	public void setChatUserId(Long chatUserId) {
+		this.chatUserId = chatUserId;
+	}
+
+	public String getMessage() {
         return message;
     }
 
@@ -51,6 +61,7 @@ public class MessageDTO {
     public String toString() {
         return new StringJoiner(", ", MessageDTO.class.getSimpleName() + "[", "]")
                 .add("userLogin='" + userLogin + "'")
+                .add("chatUserId='" + chatUserId + "'")
                 .add("chatRoomId='" + chatRoomId + "'")
                 .add("message='" + message + "'")
                 .add("time='" + time + "'")

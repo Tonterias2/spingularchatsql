@@ -56,12 +56,14 @@ public class ChatService implements ApplicationListener<SessionDisconnectEvent> 
     @MessageMapping("/chat")
     @SendTo("/chat/public")
     public MessageDTO sendChat(@Payload MessageDTO messageDTO, StompHeaderAccessor stompHeaderAccessor, Principal principal) {
+        log.debug("Message Recieved from sender {} ", messageDTO);
         messageDTO.setUserLogin(principal.getName());
     	ChatMessageDTO chatmessageDTO = new ChatMessageDTO();
+    	chatmessageDTO.setChatRoomId(messageDTO.getChatRoomId());
+    	chatmessageDTO.setChatUserId(messageDTO.getChatUserId());
     	chatmessageDTO.setMessage(messageDTO.getMessage());
     	chatmessageDTO.setMessageSentAt(dateTimeFormatter.format(ZonedDateTime.now()));
-    	chatmessageDTO.setChatUserId(Long.parseLong(messageDTO.getUserLogin()));
-        log.debug("Message Recieved from sender {} ", messageDTO);
+    	chatmessageDTO.setIsDelivered(true);
     	log.debug("Saving Chat Message : {}", chatmessageDTO);
         chatMessageService.save(chatmessageDTO);
         return setupMessageDTO(messageDTO, stompHeaderAccessor, principal);

@@ -21,7 +21,6 @@ public class ChatMessageDTO implements Serializable {
 
     private Boolean isOffensive;
 
-
     private Long chatRoomId;
 
     private Long chatUserId;
